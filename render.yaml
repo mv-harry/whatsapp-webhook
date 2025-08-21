@@ -1,0 +1,12 @@
+services:
+  - type: web
+    name: weebhook-webhook
+    env: python
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn main:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: VERIFY_TOKEN
+        value: your_custom_verify_token_here
+      - key: N8N_WEBHOOK_URL
+        value: https://your-n8n-instance.com/webhook/your-webhook-id 

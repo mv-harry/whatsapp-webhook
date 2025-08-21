@@ -1,88 +1,87 @@
 # Weebhook - WhatsApp Business API Webhook Server
 
-A **Python Flask** webhook server designed to handle WhatsApp Business API callbacks and integrate with n8n for automation workflows.
+A **FastAPI** webhook server designed to handle WhatsApp Business API callbacks and integrate with n8n for automation workflows.
 
 ## 🚀 Features
 
+- **FastAPI Framework**: Modern, fast Python web framework
 - **Webhook Verification**: Handles Meta's webhook verification process
 - **Message Processing**: Receives and processes WhatsApp messages and status updates
 - **Event Logging**: Stores webhook events for debugging and monitoring
 - **Health Monitoring**: Built-in health check endpoints
 - **n8n Integration Ready**: Designed to work seamlessly with n8n automation
-- **Python Flask**: Modern, lightweight web framework
+- **Auto-generated API Docs**: Swagger UI documentation at `/docs`
+- **Cloud Ready**: Optimized for Render deployment
 
 ## 📋 Prerequisites
 
 - **Python 3.8 or higher**
 - **pip** (Python package installer)
+- **GitHub account** (for deployment)
+- **Render account** (free hosting)
 - Meta Developer Account
 - WhatsApp Business API access
 
 ## 🛠️ Installation
 
-### Option 1: Using requirements.txt
+### Local Development
 1. **Clone or download this repository**
 2. **Install dependencies:**
    ```bash
    pip install -r requirements.txt
    ```
 
-### Option 2: Using setup.py
-```bash
-python setup.py install
-```
-
-### Option 3: Using pip directly
-```bash
-pip install Flask Flask-CORS python-dotenv requests gunicorn
-```
-
 3. **Configure environment variables:**
    ```bash
-   # On Windows
+   # Copy environment template
    copy env.example .env
    
-   # On Linux/Mac
-   cp env.example .env
-   ```
-   
-   Edit `.env` file with your configuration:
-   ```env
-   PORT=3000
+   # Edit .env with your configuration
    VERIFY_TOKEN=your_custom_verify_token_here
    ```
 
-## 🚀 Usage
+4. **Run locally:**
+   ```bash
+   python main.py
+   ```
 
-### Development Mode
-```bash
-python server.py
-```
+## 🚀 Deployment to Render (Recommended)
 
-### Production Mode (using Gunicorn)
-```bash
-gunicorn -w 4 -b 0.0.0.0:3000 server:app
-```
+### Quick Deploy with render.yaml
+1. **Push to GitHub:**
+   ```bash
+   git add .
+   git commit -m "Add FastAPI webhook server"
+   git push origin master
+   ```
 
-### Using the setup script (Windows)
-```bash
-setup.bat
-```
+2. **Deploy on Render:**
+   - Go to [render.com](https://render.com)
+   - Sign up with GitHub
+   - Click "New +" → "Blueprint"
+   - Connect your repository
+   - Click "Apply"
 
-The server will start on port 3000 (or the port specified in your .env file).
+3. **Get your public URL:**
+   ```
+   https://your-app-name.onrender.com
+   ```
+
+### Manual Deployment
+See [DEPLOYMENT.md](DEPLOYMENT.md) for detailed manual setup instructions.
 
 ## 📱 Meta/WhatsApp Business API Configuration
 
 ### 1. Get Your Webhook URL
-- **Local Development**: Use ngrok to expose your local server
-- **Production**: Use your actual domain
+- **Local Development**: `http://localhost:3000/webhook`
+- **Production**: `https://your-app-name.onrender.com/webhook`
 
 ### 2. Configure in Meta Developer Console
 1. Go to [Meta Developers](https://developers.facebook.com/)
 2. Navigate to your app → WhatsApp → Configuration
 3. Set the following values:
-   - **Webhook URL**: `https://your-domain.com/webhook`
-   - **Verify Token**: The same value you set in your `.env` file
+   - **Webhook URL**: Your Render URL + `/webhook`
+   - **Verify Token**: The same value you set in your environment variables
 
 ### 3. Subscribe to Webhook Fields
 Make sure to subscribe to:
@@ -94,15 +93,16 @@ Make sure to subscribe to:
 ### Option 1: Direct Webhook
 Use the webhook URL directly in n8n:
 ```
-https://your-domain.com/webhook
+https://your-app-name.onrender.com/webhook
 ```
 
 ### Option 2: Automatic Forwarding
-The server automatically forwards events to n8n if you set the `N8N_WEBHOOK_URL` environment variable:
-
+Set the `N8N_WEBHOOK_URL` environment variable in Render:
 ```env
 N8N_WEBHOOK_URL=https://your-n8n-instance.com/webhook/your-webhook-id
 ```
+
+The server automatically forwards events to n8n when configured.
 
 ## 📊 API Endpoints
 
@@ -114,98 +114,74 @@ N8N_WEBHOOK_URL=https://your-n8n-instance.com/webhook/your-webhook-id
 | `/health` | GET | Health check endpoint |
 | `/events` | GET | View recent webhook events |
 | `/events` | DELETE | Clear webhook events log |
+| `/docs` | GET | Interactive API documentation (Swagger UI) |
 
-## 🌐 Exposing Your Local Server
+## 🌐 Deployment Options
 
-### Using ngrok (Recommended for development)
-```bash
-# Install ngrok
-# Download from: https://ngrok.com/download
+### Render (Recommended)
+- ✅ **Free hosting**
+- ✅ **Auto-deploy** on GitHub push
+- ✅ **HTTPS included**
+- ✅ **Professional setup**
 
-# Expose your local server
-ngrok http 3000
-```
+### Local Development
+- ✅ **Fast development**
+- ✅ **No internet required**
+- ❌ **Not accessible from internet**
 
-### Using pyngrok (Python package)
-```bash
-# Install pyngrok
-pip install pyngrok
-
-# In Python
-from pyngrok import ngrok
-url = ngrok.connect(3000)
-print(url)
-```
-
-### Using localtunnel
-```bash
-# Install localtunnel
-npm install -g localtunnel
-
-# Expose your local server
-lt --port 3000
-```
+### Other Cloud Platforms
+- **Railway**: Similar to Render
+- **Vercel**: Great for Python apps
+- **Heroku**: Classic option
+- **PythonAnywhere**: Python-focused
 
 ## 🔒 Security Considerations
 
 - **Verify Token**: Use a strong, unique verify token
-- **HTTPS**: Always use HTTPS in production
-- **Rate Limiting**: Consider implementing rate limiting for production use
-- **Input Validation**: The server includes basic validation but consider additional security measures
+- **HTTPS**: Always use HTTPS in production (Render provides this)
+- **Environment Variables**: Keep sensitive data in environment variables
+- **Input Validation**: FastAPI provides built-in validation
 
 ## 📝 Environment Variables
 
 | Variable | Description | Default |
 |----------|-------------|---------|
-| `PORT` | Server port | 3000 |
 | `VERIFY_TOKEN` | Meta webhook verification token | `your_verify_token_here` |
-| `META_APP_ID` | Your Meta App ID | - |
-| `META_APP_SECRET` | Your Meta App Secret | - |
-| `META_ACCESS_TOKEN` | Your Meta Access Token | - |
 | `N8N_WEBHOOK_URL` | n8n webhook URL for forwarding | - |
+| `PORT` | Server port (Render sets this) | 3000 |
 
 ## 🐛 Troubleshooting
 
-### Webhook Verification Fails
-- Check that your verify token matches exactly
-- Ensure the webhook URL is accessible from the internet
-- Check server logs for detailed error messages
+### Local Development Issues
+- Check Python version: `python --version`
+- Verify dependencies: `pip list`
+- Check port availability
 
-### No Webhook Events Received
-- Verify webhook subscription in Meta Developer Console
-- Check that your server is accessible from the internet
-- Ensure proper webhook field subscriptions
+### Render Deployment Issues
+- Check build logs in Render dashboard
+- Verify `main.py` exists and is correct
+- Check environment variables
 
-### Server Won't Start
-- Check if port 3000 is already in use
-- Verify all dependencies are installed: `pip list`
-- Check for syntax errors in configuration files
-- Ensure Python 3.8+ is installed: `python --version`
+### Webhook Issues
+- Verify Meta configuration
+- Check webhook verification
+- Review Render service logs
 
-### Import Errors
-- Make sure all requirements are installed: `pip install -r requirements.txt`
-- Check Python path and virtual environment
+## 🐍 FastAPI Advantages
 
-## 🐍 Python-Specific Notes
-
-- **Virtual Environment**: Consider using a virtual environment:
-  ```bash
-  python -m venv venv
-  source venv/bin/activate  # On Linux/Mac
-  venv\Scripts\activate     # On Windows
-  ```
-
-- **Dependencies**: All dependencies are listed in `requirements.txt`
-- **Flask Debug**: Debug mode is enabled by default for development
-- **Gunicorn**: Use Gunicorn for production deployment
+- **Performance**: Much faster than Flask
+- **Type Safety**: Built-in type hints and validation
+- **Documentation**: Auto-generated Swagger UI
+- **Modern**: Latest Python features
+- **Scalable**: Production-ready architecture
 
 ## 📚 Additional Resources
 
+- [FastAPI Documentation](https://fastapi.tiangolo.com/)
+- [Render Documentation](https://render.com/docs)
 - [WhatsApp Business API Documentation](https://developers.facebook.com/docs/whatsapp)
 - [Meta Webhooks Documentation](https://developers.facebook.com/docs/graph-api/webhooks)
 - [n8n Documentation](https://docs.n8n.io/)
-- [Flask Documentation](https://flask.palletsprojects.com/)
-- [Python Documentation](https://docs.python.org/)
 
 ## 🤝 Contributing
 

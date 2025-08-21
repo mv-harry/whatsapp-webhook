@@ -1,0 +1,29 @@
+{
+  "name": "weebhook",
+  "version": "1.0.0",
+  "description": "Python webhook server for WhatsApp Business API integration with n8n",
+  "main": "server.py",
+  "scripts": {
+    "start": "python server.py",
+    "dev": "python server.py",
+    "install": "pip install -r requirements.txt"
+  },
+  "dependencies": {
+    "Flask": "^2.3.3",
+    "Flask-CORS": "^4.0.0",
+    "python-dotenv": "^1.0.0",
+    "requests": "^2.31.0",
+    "gunicorn": "^21.2.0"
+  },
+  "keywords": [
+    "webhook",
+    "whatsapp",
+    "business-api",
+    "n8n",
+    "meta",
+    "python",
+    "flask"
+  ],
+  "author": "Your Name",
+  "license": "MIT"
+} 
